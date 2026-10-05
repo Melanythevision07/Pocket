@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor de Gastos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- VISTA DE AUTENTICACIÓN (LOGIN / REGISTRO) -->
+  <div id="auth-container" class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-illustration">
+        <!-- Ilustración Vectorial SVG Estilo EasyPay -->
+        <svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Mesa/Escritorio -->
+          <path d="M40 160H260" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+          <path d="M70 160V190" stroke="#000000" stroke-width="2.5"/>
+          <path d="M230 160V190" stroke="#000000" stroke-width="2.5"/>
+          <!-- Laptop -->
+          <rect x="110" y="125" width="80" height="30" rx="3" fill="#F8F8F8" stroke="#000000" stroke-width="2"/>
+          <path d="M100 157H200" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+          <!-- Personaje -->
+          <circle cx="150" cy="65" r="18" fill="#F9EFEB" stroke="#000000" stroke-width="2.5"/>
+          <path d="M142 58C142 58 148 52 158 55C168 58 165 68 165 68" stroke="#000000" stroke-width="3" fill="#000000"/>
+          <path d="M130 110C130 90 140 85 150 85C160 85 170 90 170 110" fill="#000000"/>
+          <path d="M135 95L118 130" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+          <path d="M165 95L182 130" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+          <!-- Planta decorativa -->
+          <path d="M220 135L220 157H240L240 135H220Z" fill="#7F8790" stroke="#000000" stroke-width="2"/>
+          <path d="M225 135C220 120 225 110 225 110C225 110 230 120 230 135" stroke="#000000" stroke-width="2" fill="none"/>
+          <path d="M235 135C230 115 235 105 235 105C235 105 240 115 240 135" stroke="#000000" stroke-width="2" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="auth-header">
+        <h1 id="auth-title">Easy Pocket</h1>
+        <p id="auth-subtitle">Gestiona tus finanzas personales de forma rápida y sencilla</p>
+      </div>
+
+      <form id="auth-form" class="auth-form">
+        <div class="form-group" id="name-group" style="display: none;">
+          <label for="auth-name">Nombre Completo</label>
+          <input type="text" id="auth-name" placeholder="Ej. Ana Pérez">
+        </div>
+
+        <div class="form-group">
+          <label for="auth-username">Usuario</label>
+          <input type="text" id="auth-username" placeholder="Ingresa tu usuario" required>
+        </div>
+
+        <div class="form-group">
+          <label for="auth-password">Contraseña</label>
+          <input type="password" id="auth-password" placeholder="••••••••" required>
+        </div>
+
+        <div id="auth-error" class="error-message" style="display: none;"></div>
+
+        <button type="submit" id="auth-submit-btn" class="btn btn-primary full-width">Login</button>
+      </form>
+
+      <div class="auth-footer">
+        <span id="auth-toggle-text">¿No tienes cuenta?</span>
+        <button type="button" id="auth-toggle-btn" class="btn-link">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA PRINCIPAL DEL GESTOR DE GASTOS -->
+  <div id="app-container" class="app-wrapper" style="display: none;">
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="pocket-logo">
+          <div class="pocket-shape">
+            <div class="pocket-stitch"></div>
+            <div class="pocket-coin">$</div>
+          </div>
+        </div>
+        <div>
+          <h1 class="brand-title">EasyPay</h1>
+          <span class="brand-tagline">Personal Finance Control</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- BOTÓN MODO BLANCO Y NEGRO -->
+        <button id="bw-toggle-btn" class="btn btn-theme" title="Modo Blanco y Negro">
+          <span>🌗 B&W</span>
+        </button>
+
+        <!-- BOTÓN MODO OSCURO/CLARO -->
+        <button id="theme-toggle-btn" class="btn btn-theme" title="Cambiar Tema">
+          <span id="theme-icon">🌙</span>
+        </button>
+
+        <div class="user-info">
+          <div class="avatar" id="user-avatar">U</div>
+          <div class="user-details">
+            <h2 id="user-display-name">Usuario</h2>
+            <span class="user-role">Cuenta Personal</span>
+          </div>
+        </div>
+
+        <button id="logout-btn" class="btn btn-outline">Salir</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Resumen del balance -->
+      <section class="summary-grid">
+        <div class="card summary-card balance">
+          <span class="card-title">Balance Total</span>
+          <span class="card-amount" id="total-balance">$0</span>
+        </div>
+
+        <div class="card summary-card income">
+          <span class="card-title">Ingresos Totales</span>
+          <span class="card-amount" id="total-income">$0</span>
+        </div>
+
+        <div class="card summary-card expense">
+          <span class="card-title">Gastos Totales</span>
+          <span class="card-amount" id="total-expenses">$0</span>
+        </div>
+      </section>
+
+      <!-- Estadísticas en tiempo real -->
+      <section class="card stats-card">
+        <div class="stats-header">
+          <h3>Estadísticas Financieras</h3>
+          <span class="stats-subtitle" id="stats-count">0 movimientos registrados</span>
+        </div>
+
+        <div class="stats-body">
+          <div class="ratio-wrapper">
+            <div class="ratio-label">
+              <span>Distribución de Flujo</span>
+              <span id="ratio-text">0% Ingresos / 0% Gastos</span>
+            </div>
+            <div class="ratio-bar-container">
+              <div id="income-bar" class="ratio-bar income" style="width: 50%;"></div>
+              <div id="expense-bar" class="ratio-bar expense" style="width: 50%;"></div>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="metric-title">Promedio / Movimiento</span>
+              <span class="metric-value" id="avg-amount">$0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-title">Gasto Mayor</span>
+              <span class="metric-value expense" id="max-expense">$0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-title">Ingreso Mayor</span>
+              <span class="metric-value income" id="max-income">$0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-title">Tasa de Ahorro</span>
+              <span class="metric-value" id="savings-rate">0%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Formulario e Historial -->
+      <section class="dashboard-grid">
+        <div class="card form-card">
+          <h3>Nuevo Movimiento</h3>
+          <form id="movement-form">
+            <div class="form-group">
+              <label for="mov-description">Descripción</label>
+              <input type="text" id="mov-description" placeholder="Ej. Pago de arriendo, Sueldo..." required>
+            </div>
+
+            <div class="form-group">
+              <label for="mov-amount">Monto ($)</label>
+              <input type="number" id="mov-amount" step="0.01" min="0.01" placeholder="Ej. 150000" required>
+            </div>
+
+            <div class="form-group">
+              <label for="mov-type">Tipo de Movimiento</label>
+              <select id="mov-type" required>
+                <option value="ingreso">Ingreso</option>
+                <option value="gasto">Gasto</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary full-width">Guardar Movimiento</button>
+          </form>
+        </div>
+
+        <div class="card list-card">
+          <div class="list-header">
+            <h3>Recent Transactions</h3>
+            <div class="filter-group">
+              <button class="filter-btn active" data-filter="todos">Todos</button>
+              <button class="filter-btn" data-filter="ingreso">Ingresos</button>
+              <button class="filter-btn" data-filter="gasto">Gastos</button>
+            </div>
+          </div>
+
+          <div id="movements-list" class="movements-list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
